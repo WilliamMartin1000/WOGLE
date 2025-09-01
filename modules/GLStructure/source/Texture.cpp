@@ -27,39 +27,20 @@ Texture::Texture(const char* texturePath) {
     int width, height, nrChannels;
     unsigned char* imageData = stbi_load(texturePath, &width, &height, &nrChannels, 0);
 
-    if (imageData)
+    if (imageData) //image loaded correctly
     {
-        //read the file extension to determine the number of channels (need to updated to use nrChannels)
-        int counter = 0;
-        std::string extension;
-        while (texturePath[counter] != '.') {
-            counter++;
-        }
-        counter++; //need 1 more addition in order to move it to index of first file extension type
-
-        for (int i = counter; texturePath[i] != NULL; i++) {
-            extension += texturePath[i];
-        }
-
-        for (int i = 0; extension[i] != NULL; i++) {
-            char currentLetter = extension[i];
-            extension[i] = toupper(currentLetter);
-        }
-
-        if (extension == "JPG") {
+        if (nrChannels == 3) { //image has 3 colour channels, RGB
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-            glGenerateMipmap(GL_TEXTURE_2D);
         }
-        else if (extension == "PNG") {
+        else if (nrChannels == 4) { //image has 4 colour channels, RGBA (in this case, the 4th is transparency)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-            glGenerateMipmap(GL_TEXTURE_2D);
         }
-        else {
-            std::cout << "Unrecognized file format " << std::endl;
-        }
+        //generate the mipmap for the texture
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else
+    else //image did not load correctly
     {
+        //output error message
         std::cout << "Failed to load texture\nReason: " << std::endl;
         std::cout << stbi_failure_reason();
         std::cout << std::endl;

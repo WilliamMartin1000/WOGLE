@@ -162,6 +162,7 @@
     <ClInclude Include="CONSTANTS.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="resources\shaders\originalFragmentShader.glsl" />
     <None Include="resources\shaders\originalVertexShader.glsl" />
   </ItemGroup>

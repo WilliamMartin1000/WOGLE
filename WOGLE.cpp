@@ -54,6 +54,7 @@ void renderWall(std::vector<Wall> aWallVector, Shader aShader, VAO aVAO, glm::ma
 KeyTracker globalKeyTracker = KeyTracker();
 
 int main() {
+    stbi_set_flip_vertically_on_load(true);
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -117,7 +118,6 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(particleOne.indexArray), particleOne.indexArray, GL_STATIC_DRAW);
 
     VAO vaoTwo(shaderOne);
-    stbi_set_flip_vertically_on_load(true);
 
 
 
