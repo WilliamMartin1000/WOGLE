@@ -54,6 +54,7 @@ void renderWall(std::vector<Wall> aWallVector, Shader aShader, VAO aVAO, glm::ma
 KeyTracker globalKeyTracker = KeyTracker();
 
 int main() {
+    //ensures all textures are loaded in the correct way
     stbi_set_flip_vertically_on_load(true);
 
     glfwInit();
