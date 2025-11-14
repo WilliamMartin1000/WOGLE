@@ -1,7 +1,6 @@
 //standard libraries
 #include <iostream>
 #include <cmath>
-#include <chrono>
 #include <vector>
 
 //openGL specific libraries
@@ -37,10 +36,6 @@
 
 //definitions
 #define CLEAR "\033[0H"
-
-float mixAmount = 0.5f;
-
-using namespace std::chrono_literals;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -217,16 +212,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) {
-        if (mixAmount <= 1.0f) {
-            mixAmount += 0.0002;
-        }
-    }
-    else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-        if (mixAmount >= 0.000f) {
-            mixAmount -= 0.0002;
-        }
     }
 }
 
