@@ -12,6 +12,8 @@ private:
 
 public:
     VAO(Shader aShader); //requires comments in shader files not to break
+    VAO(); //default
+    VAO(const VAO& copyVAO); //copy constructor
 
     void bind();
 };

@@ -136,6 +136,16 @@ VAO::VAO(Shader aShader) {
     }
 }
 
+VAO::VAO() {
+
+}
+
+VAO::VAO(const VAO& copyVAO) {
+    VAOID = copyVAO.VAOID;
+    VBOID = copyVAO.VBOID;
+    EBOID = copyVAO.EBOID;
+}
+
 void VAO::bind() {
     glBindVertexArray(VAOID);
 }

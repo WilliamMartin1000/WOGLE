@@ -98,6 +98,16 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	glDeleteShader(fragmentShaderID);
 }
 
+Shader::Shader() {
+
+}
+
+Shader::Shader(const Shader& copyShader) {
+	
+	vertexText = copyShader.vertexText;
+	ID = copyShader.ID;
+}
+
 void Shader::use() {
 	glUseProgram(ID);
 }

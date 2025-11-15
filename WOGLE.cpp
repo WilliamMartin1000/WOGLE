@@ -23,6 +23,9 @@
 //header files for geometry modules
 #include "./modules/Geometry/includes/Circle.h"
 #include "./modules/Geometry/includes/Plane.h"
+#include "./modules/Geometry/includes/CubeData.h"
+#include "./modules/Geometry/includes/LightCube.h"
+
 
 //header files for collisions modules
 #include "./modules/Collisions/BSP/includes/BSPT.h"
@@ -43,7 +46,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void processInput(GLFWwindow* window);
 
-void renderWall(std::vector<Wall> aWallVector, Shader aShader, VAO aVAO, glm::mat4 aViewMatrix);
+void renderWall(std::vector<Wall> aWallVector,  Shader aShader, VAO aVAO, glm::mat4 aViewMatrix);
 
 
 KeyTracker globalKeyTracker = KeyTracker();
@@ -57,7 +60,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "This is the window name", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1000, 1000, "This is the window name", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -65,7 +68,7 @@ int main() {
         return -1;
     }
 
-    //glViewport(0, 0, 800, 600);`                                                                                              
+    //glViewport(0, 0, 800, 600);                                                                                             
     glfwMakeContextCurrent(window);
 
     //we declare callback functions before window loop is made
@@ -78,8 +81,16 @@ int main() {
         return -1;
     }
 
+    //create and initialise cube VAO
+    CubeData cubeData;
+    Shader cubeShader("resources/shaders/light cube/lightCubeVertexShader.glsl", "resources/shaders/light cube/lightCubeFragmentShader.glsl");
+    VAO cubeVAO(cubeShader);
+    cubeVAO.bind();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData.cubeVertices), cubeData.cubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeData.cubeIndices), cubeData.cubeIndices, GL_STATIC_DRAW);
+    LightCube lightCube(glm::vec3(0.0f,0.0f,1.0f), glm::vec3(1.0f,1.0f,1.0f), 0.5f, cubeVAO, cubeShader);
 
-    Shader shaderOne("resources/shaders/originalVertexShader.glsl", "resources/shaders/originalFragmentShader.glsl");
+    Shader shaderOne("resources/shaders/original/originalVertexShader.glsl", "resources/shaders/original/originalFragmentShader.glsl");
     Particle particleOne(glm::vec3(0.0f, 0.0f, 1.0f), 0.1f, glm::vec3(1.0f, 1.0f, 1.0f));
     Camera cameraOne;
 
@@ -190,10 +201,12 @@ int main() {
 
         renderWall(wallVector, shaderOne, vaoTwo, viewMatrix);
 
+        lightCube.draw(viewMatrix, projectionMatrix);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 
-        std::cout << CLEAR;
+        //std::cout << CLEAR;
     }
     glfwTerminate();
 

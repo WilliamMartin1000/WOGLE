@@ -15,6 +15,8 @@ private:
 public:
 
 	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader();
+	Shader(const Shader& copyShader); //copy constructor
 
 	void use();
 
