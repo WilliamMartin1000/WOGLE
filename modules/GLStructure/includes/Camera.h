@@ -17,8 +17,9 @@ private:
 public:
 
 	void calculateCameraViewMatrix(glm::vec3 inputPosition, glm::vec3 inputTarget, glm::vec3 upDirection);
-
+	
 	//get and set methods
 	glm::mat4 getCameraViewMatrix();
+	glm::vec3 getCameraPosition();
 };
 
