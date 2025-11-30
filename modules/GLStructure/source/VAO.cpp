@@ -20,23 +20,6 @@ std::string deleteCharacters(std::string aString, char deleteChar) {
     }
     return newString;
 }
-std::string subString(std::string aString, int startIndex, int endIndex) {
-    if (aString[startIndex] == NULL) {
-        std::cout << "\nstartIndex out of bounds\n";
-        return 0;
-    }
-    else if (aString[endIndex] == NULL) {
-        std::cout << "\nendIndex out of bounds\n";
-        return 0;
-    }
-    else {
-        std::string returnString;
-        for (int i = startIndex; i <= endIndex; i++) {
-            returnString += aString[i];
-        }
-        return returnString;
-    }
-}
 
 //only works for location and attribute size values less than 10
 VAO::VAO(Shader aShader) {
@@ -77,45 +60,28 @@ VAO::VAO(Shader aShader) {
     for (int i = 0; i < vertexCode.size(); i++) {
         std::string currentLine = vertexCode[i];
         currentLine = deleteCharacters(currentLine, ' ');
-
-        for (int j = 0; currentLine[j] != NULL; j++) {
-            //This part fails for strings that = "{" or "}", adding comments resolves this -need to fix
-            if (currentLine[j + 5] != NULL) {
-                std::string potentialWord = subString(currentLine, j, j + 5);
-
-                if (potentialWord == "layout") {
-                    //now string confirmed to be a vertex attribute
-                    //find location of vector size
-                    for (int k = 0; currentLine[k] != NULL; k++) {
-                        if (currentLine[k] == '=') {
-                            //only works for locations from 0  to 9.
-                            std::string currentLocationString;
-                            currentLocationString += currentLine[k + 1];
-                            locationOrder.push_back(stoi(currentLocationString));
-                            break;
-                        }
-                    }
-                    for (int k = 0; currentLine[k] != NULL; k++) {
-                        if (currentLine[k] == 'v') {
-                            //only works for sizes from 0  to 9.
-                            std::string currentAttributeSizeString;
-                            currentAttributeSizeString += currentLine[k + 3];
-                            int currentAttributeSizeInt = stoi(currentAttributeSizeString);
-                            attributeSize.push_back(currentAttributeSizeInt);
-                            numberOfFloats += currentAttributeSizeInt;
-                            //break;
-                        }
-                    }
-
-                }
-                else {
-                    //nothing
-                }
+        
+        //make sure not a comment
+        if (currentLine.size() > 2) {
+            if (currentLine.substr(0, 2) == "//") {
+                continue;
             }
-            else {
-                //std::cout << "\nfail j + 5 check\n";
-                break;
-            }
+        }
+        
+        //check if it is a layout variable
+        if (currentLine.find("layout") != std::string::npos) {
+            //find the current location
+            int currentLocationIndex = currentLine.find("location") + 9;
+            std::string currentLocationString = currentLine.substr(currentLocationIndex, 1);
+            int currentLocationValue = std::stoi(currentLocationString);
+            locationOrder.push_back(currentLocationValue);
+            
+            //find the vector size
+            int currentAttributeSizeIndex = currentLine.find("vec") + 3;
+            std::string currentAttributeSizeString = currentLine.substr(currentAttributeSizeIndex, 1);
+            int currentAttributeSizeValue = std::stoi(currentAttributeSizeString);
+            attributeSize.push_back(currentAttributeSizeValue);
+            numberOfFloats += currentAttributeSizeValue;
         }
     }
 
@@ -124,7 +90,7 @@ VAO::VAO(Shader aShader) {
     int currentJump = 0;
     while (currentJump < numberOfFloats) {
         //debugging purposes
-        /* std::cout << locationOrder[index];
+         /*std::cout << locationOrder[index];
          std::cout << attributeSize[index];
          std::cout << numberOfFloats;
          std::cout << currentJump;
