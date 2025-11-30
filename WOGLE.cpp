@@ -23,8 +23,12 @@
 //header files for geometry modules
 #include "./modules/Geometry/includes/Circle.h"
 #include "./modules/Geometry/includes/Plane.h"
-#include "./modules/Geometry/includes/CubeData.h"
-#include "./modules/Geometry/includes/LightCube.h"
+#include "./modules/Geometry/Cubes/includes/CubeData.h"
+#include "./modules/Geometry/Cubes/includes/Cube.h"
+#include "./modules/Geometry/Cubes/includes/TextureCube.h"
+
+//lighting
+#include "./modules/Lighting/includes/LightCube.h"
 
 
 //header files for collisions modules
@@ -81,15 +85,6 @@ int main() {
         return -1;
     }
 
-    //create and initialise cube VAO
-    CubeData cubeData;
-    Shader cubeShader("resources/shaders/light cube/lightCubeVertexShader.glsl", "resources/shaders/light cube/lightCubeFragmentShader.glsl");
-    VAO cubeVAO(cubeShader);
-    cubeVAO.bind();
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData.cubeVertices), cubeData.cubeVertices, GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeData.cubeIndices), cubeData.cubeIndices, GL_STATIC_DRAW);
-    LightCube lightCube(glm::vec3(0.0f,0.0f,1.0f), glm::vec3(1.0f,1.0f,1.0f), 0.5f, cubeVAO, cubeShader);
-
     Shader shaderOne("resources/shaders/original/originalVertexShader.glsl", "resources/shaders/original/originalFragmentShader.glsl");
     Particle particleOne(glm::vec3(0.0f, 0.0f, 1.0f), 0.1f, glm::vec3(1.0f, 1.0f, 1.0f));
     Camera cameraOne;
@@ -98,6 +93,29 @@ int main() {
     Texture textureBrickWall("resources/media/image/brickWallTexture.jpg");
     Texture textureUnit("resources/media/image/unitTestingTexture.png");
     Texture textureFloor("resources/media/image/floorTexture.jpg");
+    Texture textureContainer("resources/media/image/containerTexture.png");
+    Texture textureSpecularContainer("resources/media/image/containerSpecularTexture.png");
+    Texture textureWhite("resources/media/image/whiteTexture.png");
+
+    //cubes
+    CubeData cubeData;
+
+    //create and initialise LightCube
+    Shader lightCubeShader("resources/shaders/light cube/lightCubeVertexShader.glsl", "resources/shaders/light cube/lightCubeFragmentShader.glsl");
+    VAO lightCubeVAO(lightCubeShader);
+    lightCubeVAO.bind();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData.LightCubeVertices), cubeData.LightCubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeData.LightCubeIndices), cubeData.LightCubeIndices, GL_STATIC_DRAW);
+    LightCube lightCube(glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.25f, lightCubeVAO, lightCubeShader, glm::vec3(0.4f), glm::vec3(0.6f), glm::vec3(1.0f));
+
+    //create an intialise TextureCube
+    Shader textureCubeShader("resources/shaders/texture cube/textureCubeVertexShader.glsl", "resources/shaders/texture cube/textureCubeFragmentShader.glsl");
+    VAO textureCubeVAO(textureCubeShader);
+
+    textureCubeVAO.bind();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeData.cubeVertices), cubeData.cubeVertices, GL_STATIC_DRAW);
+    Material textureMaterial(textureWhite, textureWhite, textureSpecularContainer, 1.0f);
+    TextureCube textureCube(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.5f, textureCubeVAO, textureCubeShader, textureContainer, textureMaterial);
 
     std::vector<Wall> wallVector;
     //left
@@ -184,7 +202,6 @@ int main() {
         int viewLocation = glGetUniformLocation(shaderOne.getID(), "view");
         int projectionLocation = glGetUniformLocation(shaderOne.getID(), "projection");
 
-
         shaderOne.use();
         //must use shader program before updating uniform, as update applied to currently used shader program
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
@@ -203,9 +220,11 @@ int main() {
 
         lightCube.draw(viewMatrix, projectionMatrix);
 
+        
+        textureCube.draw(viewMatrix, projectionMatrix, lightCube, cameraOne);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
-
         //std::cout << CLEAR;
     }
     glfwTerminate();
