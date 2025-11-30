@@ -8,6 +8,8 @@
 
 //OpenGL libraries
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -103,13 +105,28 @@ Shader::Shader() {
 }
 
 Shader::Shader(const Shader& copyShader) {
-	
 	vertexText = copyShader.vertexText;
 	ID = copyShader.ID;
 }
 
 void Shader::use() {
 	glUseProgram(ID);
+}
+
+//update uniform methods
+void Shader::updateVec3(std::string vecName, glm::vec3 vecValue) {
+	int vec3Location = glGetUniformLocation(ID, vecName.c_str());
+	glUniform3fv(vec3Location, 1, glm::value_ptr(vecValue));
+}
+
+void Shader::updateMat4(std::string matName, glm::mat4 matValue) {
+	int mat4Location = glGetUniformLocation(ID, matName.c_str());
+	glUniformMatrix4fv(mat4Location, 1, GL_FALSE, glm::value_ptr(matValue));
+}
+
+void Shader::updateFloat(std::string floatName, float floatValue) {
+	int floatLocation = glGetUniformLocation(ID, floatName.c_str());
+	glUniform1f(floatLocation, floatValue);
 }
 
 //get and set methods
